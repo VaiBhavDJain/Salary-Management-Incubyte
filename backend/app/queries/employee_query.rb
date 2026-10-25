@@ -1,14 +1,15 @@
 class EmployeeQuery
   FILTERS = %i[country_code department job_title].freeze
+  SORTABLE_COLUMNS = %w[full_name salary].freeze
 
   def initialize(params = {})
     @params = params
   end
 
   def call
-    scope = Employee.order(:full_name, :id)
-    scope = search(scope)
-    filter(scope)
+    scope = search(Employee.all)
+    scope = filter(scope)
+    sort(scope)
   end
 
   private
@@ -24,5 +25,11 @@ class EmployeeQuery
   def filter(scope)
     conditions = FILTERS.index_with { |key| @params[key].to_s.squish.presence }.compact
     scope.where(conditions)
+  end
+
+  def sort(scope)
+    column = SORTABLE_COLUMNS.include?(@params[:sort]) ? @params[:sort] : "full_name"
+    direction = @params[:direction] == "desc" ? :desc : :asc
+    scope.order(column => direction).order(:id)
   end
 end
