@@ -16,6 +16,7 @@ export const routes: RouteObject[] = [
       { index: true, element: <Navigate to="/employees" replace /> },
       { path: 'employees', lazy: lazyPage(() => import('./features/employees/EmployeesPage')) },
       { path: 'insights', lazy: lazyPage(() => import('./features/insights/OverviewPage')) },
+      { path: 'insights/:countryCode', lazy: lazyPage(() => import('./features/insights/CountryInsightsPage')) },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

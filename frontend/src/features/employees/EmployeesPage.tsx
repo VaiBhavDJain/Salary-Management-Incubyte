@@ -1,7 +1,8 @@
 import { PlusOutlined } from '@ant-design/icons'
-import { Alert, App, Button, Flex, Typography } from 'antd'
+import { Alert, App, Button } from 'antd'
 import { lazy, Suspense, useMemo, useState } from 'react'
 import { Navigate, useSearchParams } from 'react-router'
+import PageTitle from '../../layout/PageTitle'
 import { formatCount } from '../../lib/formatCount'
 import { useFilterOptions } from '../filterOptions/useFilterOptions'
 import EmployeeFilters from './EmployeeFilters'
@@ -45,15 +46,15 @@ export default function EmployeesPage() {
 
   return (
     <>
-      <Flex align="center" justify="space-between" wrap gap={12}>
-        <Flex align="baseline" gap={12}>
-          <Typography.Title level={2}>Employees</Typography.Title>
-          {data && <Typography.Text type="secondary">{formatCount(data.meta.total_count, 'employee')}</Typography.Text>}
-        </Flex>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => setEditing('new')}>
-          Add employee
-        </Button>
-      </Flex>
+      <PageTitle
+        title="Employees"
+        subtitle={data && formatCount(data.meta.total_count, 'employee')}
+        extra={
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setEditing('new')}>
+            Add employee
+          </Button>
+        }
+      />
       <EmployeeFilters params={params} options={options} onChange={update} />
       {params.sort === 'salary' && !params.country_code && (
         <Alert
