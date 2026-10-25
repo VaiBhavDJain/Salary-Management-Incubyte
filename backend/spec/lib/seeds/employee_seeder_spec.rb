@@ -21,6 +21,12 @@ RSpec.describe Seeds::EmployeeSeeder do
     expect(Employee.distinct.pluck(:country_code)).to match_array(Country.codes)
   end
 
+  it "gives employees varied names" do
+    described_class.new(count: 1_000).call
+
+    expect(Employee.distinct.count(:full_name)).to be > 900
+  end
+
   it "produces the same employees for the same seed" do
     described_class.new(count: 20, seed: 7).call
     first_run = seeded_rows

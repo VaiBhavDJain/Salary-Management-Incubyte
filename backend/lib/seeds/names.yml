@@ -1,0 +1,24 @@
+"IN":
+  first_names: [Aarav, Aditi, Aditya, Akash, Ananya, Anjali, Arjun, Aryan, Deepak, Divya, Gaurav, Harsh, Isha, Ishaan, Karan, Kavya, Kiran, Krishna, Lakshmi, Manish, Meera, Neha, Nikhil, Nisha, Pooja, Pranav, Priya, Rahul, Rajesh, Riya, Rohan, Sanjay, Sneha, Suresh, Tanvi, Varun, Vikram, Vivek, Yash, Zoya]
+  last_names: [Agarwal, Banerjee, Bhat, Chatterjee, Chopra, Das, Desai, Dutta, Ghosh, Gupta, Iyer, Jain, Joshi, Kapoor, Krishnan, Kulkarni, Kumar, Malhotra, Mehta, Menon, Mishra, Nair, Pandey, Patel, Pillai, Rao, Reddy, Saxena, Sen, Shah, Sharma, Shetty, Singh, Sinha, Srinivasan, Thakur, Trivedi, Varma, Verma, Yadav]
+"US":
+  first_names: [Andrew, Anthony, Ashley, Ava, Barbara, Christopher, Daniel, David, Elizabeth, Emily, Emma, Ethan, James, Jennifer, Jessica, John, Joseph, Joshua, Karen, Linda, Mark, Mary, Matthew, Mia, Michael, Noah, Olivia, Patricia, Richard, Robert, Sarah, Sophia, Susan, Thomas, William]
+  last_names: [Allen, Anderson, Brown, Clark, Davis, Garcia, Gonzalez, Harris, Hernandez, Jackson, Johnson, Jones, King, Lee, Lewis, Lopez, Martin, Martinez, Miller, Moore, Perez, Ramirez, Robinson, Rodriguez, Sanchez, Smith, Taylor, Thomas, Thompson, Walker, White, Williams, Wilson, Wright, Young]
+"GB":
+  first_names: [Alfie, Amelia, Arthur, Charlie, Chloe, Ella, Emily, Evie, Freya, George, Grace, Harry, Henry, Isla, Jack, James, Leo, Lily, Oliver, Oscar, Poppy, Ruby, Sophie, Thomas, William]
+  last_names: [Baker, Bennett, Clarke, Cook, Cooper, Edwards, Evans, Green, Hall, Harris, Hill, Hughes, Jackson, Jones, Lewis, Morgan, Price, Roberts, Shaw, Thomas, Turner, Walker, Ward, Wood, Wright]
+"DE":
+  first_names: [Anna, Ben, Clara, Elias, Emma, Felix, Finn, Hannah, Jan, Jonas, Julia, Laura, Lea, Lena, Leon, Lisa, Lukas, Marie, Maximilian, Mia, Moritz, Noah, Paul, Sophie, Tim]
+  last_names: [Becker, Braun, Fischer, Hartmann, Hoffmann, Hofmann, Klein, Koch, Krause, Krueger, Lange, Meier, Mueller, Neumann, Richter, Schmidt, Schmitt, Schneider, Schroeder, Schwarz, Wagner, Weber, Werner, Wolf, Zimmermann]
+"CA":
+  first_names: [Alice, Ava, Benjamin, Charlotte, Chloe, Emma, Ethan, Florence, Gabriel, Jacob, Leah, Liam, Logan, Lucas, Maya, Nathan, Noah, Olivia, Owen, Samuel, Sophie, Zoe]
+  last_names: [Anderson, Bergeron, Bouchard, Brown, Campbell, Cote, Fortin, Gagnon, Gauthier, Lavoie, Leblanc, MacDonald, Martin, Morin, Pelletier, Roy, Scott, Stewart, Taylor, Thompson, Tremblay, Wilson]
+"AU":
+  first_names: [Archie, Charlotte, Chloe, Grace, Henry, Hudson, Isla, Ivy, Jack, Lachlan, Leo, Matilda, Mia, Noah, Oliver, Ruby, Thomas, William, Willow, Zara]
+  last_names: [Bell, Brown, Cooper, Harris, Hayes, Jones, Kelly, King, Martin, Mitchell, Murphy, Price, Ryan, Smith, Taylor, Walker, Ward, White, Williams, Wilson]
+"SG":
+  first_names: [Aisha, Daniel, Ethan, Hao, Hui, Jia, Jun, Kai, Kumar, Li, Ling, Mei, Ming, Nurul, Rachel, Ravi, Siti, Wei, Xin, Yan]
+  last_names: [Chan, Chong, Chua, Goh, Ho, Ismail, Koh, Lee, Lim, Low, Nair, Ng, Ong, Pillai, Rahman, Sim, Tan, Teo, Wong, Yeo]
+"AE":
+  first_names: [Ahmed, Aisha, Ali, Amna, Faisal, Fatima, Hamad, Hassan, Huda, Khalid, Layla, Mariam, Maryam, Noura, Omar, Rashid, Reem, Saeed, Sara, Yousef]
+  last_names: [Amin, Aziz, Bakr, Darwish, Farouk, Habib, Haddad, Hamdan, Hashemi, Jaber, Karim, Khalil, Mansour, Nasser, Nouri, Qasim, Rahman, Saleh, Suleiman, Zayed]

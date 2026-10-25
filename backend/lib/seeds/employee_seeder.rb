@@ -2,31 +2,17 @@ module Seeds
   class EmployeeSeeder
     BATCH_SIZE = 1_000
 
+    NAMES = YAML.load_file(File.expand_path("names.yml", __dir__)).freeze
+
     COUNTRIES = {
-      "IN" => { weight: 35, pay_multiplier: 22.0,
-                first_names: %w[Aarav Priya Rohan Ananya Vikram Kavya Arjun Neha Rahul Isha],
-                last_names: %w[Sharma Iyer Patel Reddy Nair Gupta Singh Mehta Rao Das] },
-      "US" => { weight: 25, pay_multiplier: 1.0,
-                first_names: %w[James Emily Michael Olivia Daniel Sophia Ethan Ava Noah Mia],
-                last_names: %w[Smith Johnson Brown Miller Davis Wilson Taylor Clark Lewis Walker] },
-      "GB" => { weight: 10, pay_multiplier: 0.62,
-                first_names: %w[Oliver Amelia Harry Isla George Grace Jack Freya Charlie Poppy],
-                last_names: %w[Jones Evans Thomas Roberts Wright Hughes Green Hall Wood Turner] },
-      "DE" => { weight: 8, pay_multiplier: 0.68,
-                first_names: %w[Lukas Mia Leon Hannah Felix Lena Jonas Emma Paul Lea],
-                last_names: %w[Mueller Schmidt Schneider Fischer Weber Becker Wagner Hoffmann Koch Richter] },
-      "CA" => { weight: 7, pay_multiplier: 1.05,
-                first_names: %w[Liam Charlotte Lucas Chloe Benjamin Zoe Nathan Maya Owen Leah],
-                last_names: %w[Tremblay Martin Roy Gagnon Campbell Anderson Leblanc Morin Bouchard Scott] },
-      "AU" => { weight: 5, pay_multiplier: 1.15,
-                first_names: %w[William Matilda Thomas Ruby Henry Ivy Archie Zara Hudson Willow],
-                last_names: %w[Kelly Ryan Murphy Mitchell Cooper Ward Bell Hayes King Price] },
-      "SG" => { weight: 5, pay_multiplier: 1.05,
-                first_names: %w[Wei Hui Jun Xin Ming Li Kai Mei Ravi Siti],
-                last_names: %w[Tan Lim Lee Ng Ong Wong Goh Chua Teo Koh] },
-      "AE" => { weight: 5, pay_multiplier: 2.7,
-                first_names: %w[Omar Fatima Ahmed Mariam Khalid Noura Yousef Aisha Hassan Layla],
-                last_names: %w[Haddad Khalil Nasser Saleh Rahman Aziz Hamdan Karim Farouk Zayed] }
+      "IN" => { weight: 35, pay_multiplier: 22.0 },
+      "US" => { weight: 25, pay_multiplier: 1.0 },
+      "GB" => { weight: 10, pay_multiplier: 0.62 },
+      "DE" => { weight: 8, pay_multiplier: 0.68 },
+      "CA" => { weight: 7, pay_multiplier: 1.05 },
+      "AU" => { weight: 5, pay_multiplier: 1.15 },
+      "SG" => { weight: 5, pay_multiplier: 1.05 },
+      "AE" => { weight: 5, pay_multiplier: 2.7 }
     }.freeze
 
     JOBS = [
@@ -73,8 +59,8 @@ module Seeds
       country_code = COUNTRY_POOL.sample(random: @random)
       country = COUNTRIES.fetch(country_code)
       job = JOB_POOL.sample(random: @random)
-      first_name = country[:first_names].sample(random: @random)
-      last_name = country[:last_names].sample(random: @random)
+      first_name = NAMES.dig(country_code, "first_names").sample(random: @random)
+      last_name = NAMES.dig(country_code, "last_names").sample(random: @random)
 
       {
         full_name: "#{first_name} #{last_name}",
