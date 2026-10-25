@@ -3,7 +3,7 @@ module Api
     before_action :set_employee, only: %i[show update destroy]
 
     def index
-      pagination = Pagination.new(Employee.order(:full_name, :id), page: params[:page], per_page: params[:per_page])
+      pagination = Pagination.new(EmployeeQuery.new(params).call, page: params[:page], per_page: params[:per_page])
 
       render json: {
         data: pagination.records.map { |employee| EmployeeSerializer.new(employee) },
