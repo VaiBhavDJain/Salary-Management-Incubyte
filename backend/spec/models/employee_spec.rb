@@ -13,6 +13,7 @@ RSpec.describe Employee, type: :model do
     it { is_expected.to validate_presence_of(:country_code) }
     it { is_expected.to validate_presence_of(:salary) }
     it { is_expected.to validate_numericality_of(:salary).is_greater_than(0) }
+    it { is_expected.to validate_inclusion_of(:country_code).in_array(Country.codes) }
     it { is_expected.to allow_value("asha.rao@acme.com").for(:email) }
     it { is_expected.not_to allow_values("asha.rao", "asha@", "@acme.com", "asha rao@acme.com").for(:email) }
 
@@ -22,6 +23,12 @@ RSpec.describe Employee, type: :model do
 
       expect(duplicate).not_to be_valid
       expect(duplicate.errors[:email]).to include("has already been taken")
+    end
+  end
+
+  describe "#currency" do
+    it "is the local currency of the employee's country" do
+      expect(build(:employee, country_code: "US").currency).to eq("USD")
     end
   end
 
