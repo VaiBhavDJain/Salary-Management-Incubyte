@@ -12,5 +12,21 @@ module Api
     def show
       render json: EmployeeSerializer.new(Employee.find(params[:id]))
     end
+
+    def create
+      employee = Employee.new(employee_params)
+
+      if employee.save
+        render json: EmployeeSerializer.new(employee), status: :created
+      else
+        render json: { errors: employee.errors.to_hash }, status: :unprocessable_content
+      end
+    end
+
+    private
+
+    def employee_params
+      params.expect(employee: %i[full_name email job_title department country_code salary])
+    end
   end
 end
