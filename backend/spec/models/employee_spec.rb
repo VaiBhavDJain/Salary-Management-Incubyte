@@ -15,6 +15,14 @@ RSpec.describe Employee, type: :model do
     it { is_expected.to validate_numericality_of(:salary).is_greater_than(0) }
     it { is_expected.to allow_value("asha.rao@acme.com").for(:email) }
     it { is_expected.not_to allow_values("asha.rao", "asha@", "@acme.com", "asha rao@acme.com").for(:email) }
+
+    it "rejects an email already used by another employee, ignoring case" do
+      create(:employee, email: "asha@acme.com")
+      duplicate = build(:employee, email: "ASHA@acme.com")
+
+      expect(duplicate).not_to be_valid
+      expect(duplicate.errors[:email]).to include("has already been taken")
+    end
   end
 
   describe "normalization" do
@@ -34,6 +42,13 @@ RSpec.describe Employee, type: :model do
       employee = build(:employee, salary: 0)
 
       expect { employee.save(validate: false) }.to raise_error(ActiveRecord::CheckViolation)
+    end
+
+    it "rejects a duplicate email even when validations are skipped" do
+      create(:employee, email: "asha@acme.com")
+      duplicate = build(:employee, email: "asha@acme.com")
+
+      expect { duplicate.save(validate: false) }.to raise_error(ActiveRecord::RecordNotUnique)
     end
   end
 end
