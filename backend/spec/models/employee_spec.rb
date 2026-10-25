@@ -12,5 +12,14 @@ RSpec.describe Employee, type: :model do
     it { is_expected.to validate_presence_of(:department) }
     it { is_expected.to validate_presence_of(:country_code) }
     it { is_expected.to validate_presence_of(:salary) }
+    it { is_expected.to validate_numericality_of(:salary).is_greater_than(0) }
+  end
+
+  describe "database constraints" do
+    it "rejects a non-positive salary even when validations are skipped" do
+      employee = build(:employee, salary: 0)
+
+      expect { employee.save(validate: false) }.to raise_error(ActiveRecord::CheckViolation)
+    end
   end
 end
