@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     resource :filter_options, only: :show
 
     namespace :insights do
+      resource :overview, only: :show
       resources :countries, only: :show, param: :code
     end
   end
