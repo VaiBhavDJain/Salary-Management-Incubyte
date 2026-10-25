@@ -17,6 +17,18 @@ RSpec.describe Employee, type: :model do
     it { is_expected.not_to allow_values("asha.rao", "asha@", "@acme.com", "asha rao@acme.com").for(:email) }
   end
 
+  describe "normalization" do
+    it "downcases and strips the email" do
+      expect(described_class.new(email: "  Asha.Rao@ACME.com ").email).to eq("asha.rao@acme.com")
+    end
+
+    it "collapses extra whitespace in name, job title and department" do
+      employee = described_class.new(full_name: " Asha   Rao ", job_title: "Software  Engineer ", department: " Engineering")
+
+      expect(employee).to have_attributes(full_name: "Asha Rao", job_title: "Software Engineer", department: "Engineering")
+    end
+  end
+
   describe "database constraints" do
     it "rejects a non-positive salary even when validations are skipped" do
       employee = build(:employee, salary: 0)
