@@ -17,6 +17,16 @@ RSpec.describe Employee, type: :model do
     it { is_expected.to allow_value("asha.rao@acme.com").for(:email) }
     it { is_expected.not_to allow_values("asha.rao", "asha@", "@acme.com", "asha rao@acme.com").for(:email) }
 
+    it "reports only a blank error for each missing field" do
+      employee = described_class.new.tap(&:valid?)
+
+      expect(employee.errors.details).to include(
+        email: [ { error: :blank } ],
+        country_code: [ { error: :blank } ],
+        salary: [ { error: :blank } ]
+      )
+    end
+
     it "rejects an email already used by another employee, ignoring case" do
       create(:employee, email: "asha@acme.com")
       duplicate = build(:employee, email: "ASHA@acme.com")
