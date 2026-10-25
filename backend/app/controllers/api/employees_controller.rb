@@ -1,9 +1,12 @@
 module Api
   class EmployeesController < ApplicationController
     def index
-      employees = Employee.order(:full_name, :id)
+      pagination = Pagination.new(Employee.order(:full_name, :id), page: params[:page], per_page: params[:per_page])
 
-      render json: { data: employees.map { |employee| EmployeeSerializer.new(employee) } }
+      render json: {
+        data: pagination.records.map { |employee| EmployeeSerializer.new(employee) },
+        meta: pagination.meta
+      }
     end
   end
 end
