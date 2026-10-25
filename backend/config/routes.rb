@@ -10,4 +10,7 @@ Rails.application.routes.draw do
       resources :countries, only: :show, param: :code
     end
   end
+
+  root "frontend#show"
+  get "*path", to: "frontend#show", constraints: ->(request) { !request.path.start_with?("/api/") && request.format.html? }
 end

@@ -15,14 +15,23 @@ export class ApiError extends Error {
   }
 }
 
+function parseOrNull(text: string) {
+  try {
+    return JSON.parse(text)
+  } catch {
+    return null
+  }
+}
+
 async function request<T>(url: string, init: RequestInit = {}): Promise<T> {
   const headers: HeadersInit = { Accept: 'application/json' }
   if (init.body) headers['Content-Type'] = 'application/json'
 
   const response = await fetch(url, { ...init, headers })
-  if (!response.ok) throw new ApiError(response.status, await response.json().catch(() => null))
+  const text = await response.text()
+  if (!response.ok) throw new ApiError(response.status, parseOrNull(text))
 
-  return response.status === 204 ? (undefined as T) : response.json()
+  return (text ? JSON.parse(text) : undefined) as T
 }
 
 export function getJson<T>(path: string, params: QueryParams = {}) {

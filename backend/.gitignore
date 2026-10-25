@@ -24,3 +24,8 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+
+/public/assets
+/public/spa
+/public/favicon.svg
+/public/favicon.svg.gz

@@ -1,0 +1,17 @@
+/.git/
+/.github/
+/docs/
+**/node_modules/
+/frontend/dist/
+
+/backend/.bundle
+/backend/.env*
+/backend/config/master.key
+/backend/config/credentials/*.key
+/backend/log/*
+/backend/tmp/*
+/backend/storage/*
+/backend/public/assets
+/backend/public/spa
+/backend/public/favicon.svg
+/backend/spec/
