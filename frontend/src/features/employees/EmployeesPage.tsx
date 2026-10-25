@@ -1,4 +1,5 @@
 import { Alert, Flex, Typography } from 'antd'
+import { useMemo } from 'react'
 import { Navigate, useSearchParams } from 'react-router'
 import EmployeeTable from './EmployeeTable'
 import { useEmployees } from './useEmployees'
@@ -6,7 +7,8 @@ import { useEmployees } from './useEmployees'
 export default function EmployeesPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const page = Math.max(1, Number(searchParams.get('page')) || 1)
-  const { data, isError, isFetching } = useEmployees({ page })
+  const params = useMemo(() => ({ page }), [page])
+  const { data, isError, isFetching } = useEmployees(params)
 
   const withPage = (nextPage: number) => {
     const params = new URLSearchParams(searchParams)
