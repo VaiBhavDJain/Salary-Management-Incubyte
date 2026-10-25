@@ -9,16 +9,31 @@ export class ApiError extends Error {
     this.status = status
     this.body = body
   }
+
+  get fieldErrors(): Record<string, string[]> {
+    return (this.body as { errors?: Record<string, string[]> } | null)?.errors ?? {}
+  }
 }
 
-export async function getJson<T>(path: string, params: QueryParams = {}): Promise<T> {
+async function request<T>(url: string, init: RequestInit = {}): Promise<T> {
+  const headers: HeadersInit = { Accept: 'application/json' }
+  if (init.body) headers['Content-Type'] = 'application/json'
+
+  const response = await fetch(url, { ...init, headers })
+  if (!response.ok) throw new ApiError(response.status, await response.json().catch(() => null))
+
+  return response.status === 204 ? (undefined as T) : response.json()
+}
+
+export function getJson<T>(path: string, params: QueryParams = {}) {
   const query = new URLSearchParams()
   for (const [key, value] of Object.entries(params)) {
     if (value !== undefined && value !== '') query.set(key, String(value))
   }
 
-  const response = await fetch(query.size ? `${path}?${query}` : path, { headers: { Accept: 'application/json' } })
-  if (!response.ok) throw new ApiError(response.status, await response.json().catch(() => null))
+  return request<T>(query.size ? `${path}?${query}` : path)
+}
 
-  return response.json()
+export function sendJson<T>(method: 'POST' | 'PATCH' | 'DELETE', path: string, body?: unknown) {
+  return request<T>(path, { method, body: body === undefined ? undefined : JSON.stringify(body) })
 }

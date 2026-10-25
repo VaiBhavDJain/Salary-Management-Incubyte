@@ -9,7 +9,8 @@ class ResizeObserverStub {
   disconnect() {}
 }
 
-configure({ asyncUtilTimeout: 3000 })
+// Skip jsdom's slow visibility checks in *ByRole queries; only one popup is open at a time in these tests.
+configure({ asyncUtilTimeout: 3000, defaultHidden: true })
 
 vi.stubGlobal('ResizeObserver', ResizeObserverStub)
 vi.stubGlobal('matchMedia', (query: string) => ({

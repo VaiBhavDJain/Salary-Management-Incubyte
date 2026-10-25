@@ -9,6 +9,8 @@ export interface Employee {
   salary: number
 }
 
+export type EmployeeInput = Omit<Employee, 'id' | 'currency'>
+
 export interface PageMeta {
   page: number
   per_page: number

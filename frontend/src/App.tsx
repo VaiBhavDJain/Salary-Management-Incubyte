@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { App as AntApp } from 'antd'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 import { routes } from './routes'
 
@@ -8,7 +9,9 @@ const queryClient = new QueryClient({ defaultOptions: { queries: { staleTime: 30
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <AntApp>
+        <RouterProvider router={router} />
+      </AntApp>
     </QueryClientProvider>
   )
 }
