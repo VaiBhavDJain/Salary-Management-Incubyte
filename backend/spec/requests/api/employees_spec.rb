@@ -29,5 +29,14 @@ RSpec.describe "Employees API", type: :request do
         "salary" => 1_800_000.0
       )
     end
+
+    it "paginates the list" do
+      %w[Asha Bina Chen].each { |name| create(:employee, full_name: name) }
+
+      get "/api/employees", params: { page: 2, per_page: 2 }
+
+      expect(response.parsed_body["data"].pluck("full_name")).to eq([ "Chen" ])
+      expect(response.parsed_body["meta"]).to eq("page" => 2, "per_page" => 2, "total_count" => 3, "total_pages" => 2)
+    end
   end
 end
