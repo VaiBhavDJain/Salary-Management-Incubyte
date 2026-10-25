@@ -21,10 +21,16 @@ RSpec.describe Seeds::EmployeeSeeder do
     expect(Employee.distinct.pluck(:country_code)).to match_array(Country.codes)
   end
 
-  it "gives employees varied names" do
+  it "gives every employee a unique name" do
+    described_class.new(count: 2_000).call
+
+    expect(Employee.distinct.count(:full_name)).to eq(2_000)
+  end
+
+  it "builds plain ASCII emails, even from accented names" do
     described_class.new(count: 1_000).call
 
-    expect(Employee.distinct.count(:full_name)).to be > 900
+    expect(Employee.pluck(:email)).to all(match(/\A[a-z0-9.-]+@acme\.example\z/))
   end
 
   it "produces the same employees for the same seed" do

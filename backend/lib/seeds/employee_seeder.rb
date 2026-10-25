@@ -1,18 +1,18 @@
 module Seeds
   class EmployeeSeeder
     BATCH_SIZE = 1_000
-
-    NAMES = YAML.load_file(File.expand_path("names.yml", __dir__)).freeze
+    MAX_NAME_ATTEMPTS = 100
 
     COUNTRIES = {
-      "IN" => { weight: 35, pay_multiplier: 22.0 },
-      "US" => { weight: 25, pay_multiplier: 1.0 },
-      "GB" => { weight: 10, pay_multiplier: 0.62 },
-      "DE" => { weight: 8, pay_multiplier: 0.68 },
-      "CA" => { weight: 7, pay_multiplier: 1.05 },
-      "AU" => { weight: 5, pay_multiplier: 1.15 },
-      "SG" => { weight: 5, pay_multiplier: 1.05 },
-      "AE" => { weight: 5, pay_multiplier: 2.7 }
+      "IN" => { weight: 35, pay_multiplier: 22.0, name_locales: %w[en-IND] },
+      "US" => { weight: 25, pay_multiplier: 1.0, name_locales: %w[en-US] },
+      "GB" => { weight: 10, pay_multiplier: 0.62, name_locales: %w[en-GB] },
+      "DE" => { weight: 8, pay_multiplier: 0.68, name_locales: %w[de] },
+      "CA" => { weight: 7, pay_multiplier: 1.05, name_locales: %w[en-CA] },
+      "AU" => { weight: 5, pay_multiplier: 1.15, name_locales: %w[en-AU] },
+      "SG" => { weight: 5, pay_multiplier: 1.05, name_locales: %w[en-SG] },
+      # Most of the UAE workforce are expatriates, so names come from several locales.
+      "AE" => { weight: 5, pay_multiplier: 2.7, name_locales: %w[en-IND en-PAK en-GB en-US] }
     }.freeze
 
     JOBS = [
@@ -43,14 +43,20 @@ module Seeds
     def initialize(count:, seed: 42)
       @count = count
       @random = Random.new(seed)
+      @used_names = Set.new
     end
 
     def call
+      previous_random = Faker::Config.random
+      Faker::Config.random = @random
+
       (1..@count).each_slice(BATCH_SIZE) do |numbers|
         Employee.insert_all!(numbers.map { |number| employee_attributes(number) })
       end
 
       @count
+    ensure
+      Faker::Config.random = previous_random
     end
 
     private
@@ -59,17 +65,27 @@ module Seeds
       country_code = COUNTRY_POOL.sample(random: @random)
       country = COUNTRIES.fetch(country_code)
       job = JOB_POOL.sample(random: @random)
-      first_name = NAMES.dig(country_code, "first_names").sample(random: @random)
-      last_name = NAMES.dig(country_code, "last_names").sample(random: @random)
+      full_name = unique_name(country[:name_locales])
 
       {
-        full_name: "#{first_name} #{last_name}",
-        email: "#{first_name}.#{last_name}.#{number}@acme.example".downcase,
+        full_name:,
+        email: "#{full_name.parameterize(separator: ".")}.#{number}@acme.example",
         job_title: job[:title],
         department: job[:department],
         country_code:,
         salary: (@random.rand(job[:salary_range]) * country[:pay_multiplier]).round(-2)
       }
+    end
+
+    def unique_name(locales)
+      MAX_NAME_ATTEMPTS.times do
+        name = Faker::Base.with_locale(locales.sample(random: @random)) do
+          "#{Faker::Name.first_name} #{Faker::Name.last_name}"
+        end
+        return name if @used_names.add?(name)
+      end
+
+      raise "Could not find an unused name for #{locales.join(", ")}"
     end
   end
 end

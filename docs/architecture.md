@@ -34,7 +34,7 @@ There is one deployable unit. Rails serves the JSON API under `/api`, and serves
 | `PayInsights` | Headcount, min, max, average and median (`PERCENTILE_CONT`) for any scope or group, in one SQL query |
 | `OrgOverview` | Pay per country in its own currency, and headcount per department |
 | Controllers | Thin. `ApplicationController` turns missing records and missing payloads into JSON 404 and 400 |
-| `Seeds::EmployeeSeeder` | Deterministic 10k rows, inserted with `insert_all` in batches of 1,000 |
+| `Seeds::EmployeeSeeder` | Deterministic 10k rows: unique Faker names in each country's locale, inserted with `insert_all` in batches of 1,000 |
 
 ## Frontend
 

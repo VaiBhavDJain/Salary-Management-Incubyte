@@ -24,7 +24,7 @@ A web app for ACME's HR manager to maintain salary records for 10,000 employees 
   - Per country: headcount and median, average, lowest and highest salary, in local currency, plus the highest paid role.
   - A sortable breakdown by job title, where each role links to the matching employees.
   - An org overview with headcount by department.
-- **Demo data.** A deterministic seed of 10,000 employees with realistic names, roles and pay bands per country.
+- **Demo data.** A deterministic seed of 10,000 employees. Each has a unique name from Faker's locale for their country, plus a realistic role and a pay band for that country.
 
 Scope, decisions and deliberate omissions (for example, no cross-currency comparison and no authentication in v1) are in [docs/requirements.md](docs/requirements.md).
 
@@ -123,12 +123,12 @@ backend/
   app/services/          PayInsights (one SQL query per breakdown), OrgOverview, Pagination
   app/serializers/       Public JSON shape of an employee
   app/controllers/       Thin API controllers, plus FrontendController for the React app
-  lib/seeds/             Deterministic 10k employee seeder and name lists
+  lib/seeds/             Deterministic 10k employee seeder (unique Faker names per country)
 frontend/src/
   features/employees/    List, URL-driven filters, table, form modal, mutations
   features/insights/     Overview and country pages
   api/  lib/  layout/    Fetch client, formatting helpers, shared layout
-docs/                    Requirements, architecture, performance, AI usage
+docs/                    Requirements, architecture, performance
 ```
 
 ## How it was built
@@ -139,4 +139,3 @@ More detail:
 
 - [Architecture and trade-offs](docs/architecture.md)
 - [Performance measurements](docs/performance.md)
-- [How AI tools were used](docs/ai-usage.md)
