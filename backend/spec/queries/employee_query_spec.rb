@@ -62,4 +62,28 @@ RSpec.describe EmployeeQuery do
       expect(names(country_code: "", department: nil)).to eq([ "Asha Rao", "Dev Patel", "Emma Brown" ])
     end
   end
+
+  describe "sorting" do
+    before do
+      create(:employee, full_name: "Asha Rao", salary: 2_000_000)
+      create(:employee, full_name: "Bina Shah", salary: 3_000_000)
+      create(:employee, full_name: "Chen Li", salary: 1_000_000)
+    end
+
+    it "sorts by salary, highest first" do
+      expect(names(sort: "salary", direction: "desc")).to eq([ "Bina Shah", "Asha Rao", "Chen Li" ])
+    end
+
+    it "sorts by salary, lowest first" do
+      expect(names(sort: "salary", direction: "asc")).to eq([ "Chen Li", "Asha Rao", "Bina Shah" ])
+    end
+
+    it "sorts by name in reverse" do
+      expect(names(sort: "full_name", direction: "desc")).to eq([ "Chen Li", "Bina Shah", "Asha Rao" ])
+    end
+
+    it "falls back to name order for unknown columns and directions" do
+      expect(names(sort: "email; DROP TABLE employees", direction: "sideways")).to eq([ "Asha Rao", "Bina Shah", "Chen Li" ])
+    end
+  end
 end

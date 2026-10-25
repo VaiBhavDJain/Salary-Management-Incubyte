@@ -52,6 +52,15 @@ RSpec.describe "Employees API", type: :request do
       expect(response.parsed_body["data"].pluck("full_name")).to eq([ "Emma Brown" ])
     end
 
+    it "sorts by salary" do
+      create(:employee, full_name: "Asha Rao", salary: 1_000_000)
+      create(:employee, full_name: "Ravi Kumar", salary: 2_000_000)
+
+      get "/api/employees", params: { sort: "salary", direction: "desc" }
+
+      expect(response.parsed_body["data"].pluck("full_name")).to eq([ "Ravi Kumar", "Asha Rao" ])
+    end
+
     it "paginates the list" do
       %w[Asha Bina Chen].each { |name| create(:employee, full_name: name) }
 
