@@ -23,4 +23,13 @@ export interface EmployeeList {
 
 export interface EmployeeListParams {
   page: number
+  per_page?: number
+  q?: string
+  country_code?: string
+  department?: string
+  job_title?: string
+  sort?: string
+  direction?: string
 }
+
+export type EmployeeListChanges = Partial<Record<keyof EmployeeListParams, string | number | undefined>>

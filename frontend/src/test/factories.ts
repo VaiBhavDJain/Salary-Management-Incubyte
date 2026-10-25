@@ -1,3 +1,4 @@
+import type { FilterOptions } from '../features/filterOptions/useFilterOptions'
 import type { Employee, EmployeeList, PageMeta } from '../features/employees/types'
 
 export function buildEmployee(overrides: Partial<Employee> = {}): Employee {
@@ -18,5 +19,17 @@ export function buildEmployeeList(employees: Employee[], meta: Partial<PageMeta>
   return {
     data: employees,
     meta: { page: 1, per_page: 25, total_count: employees.length, total_pages: 1, ...meta },
+  }
+}
+
+export function buildFilterOptions(overrides: Partial<FilterOptions> = {}): FilterOptions {
+  return {
+    countries: [
+      { code: 'IN', name: 'India', currency: 'INR' },
+      { code: 'US', name: 'United States', currency: 'USD' },
+    ],
+    departments: ['Engineering', 'Sales'],
+    job_titles: ['Account Executive', 'Software Engineer'],
+    ...overrides,
   }
 }
