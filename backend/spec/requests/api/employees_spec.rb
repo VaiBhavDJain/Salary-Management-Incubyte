@@ -34,6 +34,15 @@ RSpec.describe "Employees API", type: :request do
       )
     end
 
+    it "searches by name or email" do
+      create(:employee, full_name: "Asha Rao")
+      create(:employee, full_name: "Ravi Kumar")
+
+      get "/api/employees", params: { q: "kumar" }
+
+      expect(response.parsed_body["data"].pluck("full_name")).to eq([ "Ravi Kumar" ])
+    end
+
     it "paginates the list" do
       %w[Asha Bina Chen].each { |name| create(:employee, full_name: name) }
 
