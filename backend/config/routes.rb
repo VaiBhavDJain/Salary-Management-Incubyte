@@ -3,5 +3,6 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :employees, only: %i[index show create update destroy]
+    resource :filter_options, only: :show
   end
 end
