@@ -1,87 +1,125 @@
 # Salary Management
 
-A web app for ACME's HR manager to maintain salary records for ~10,000 employees across 8 countries, and to answer "how do we pay people?" without spreadsheets.
+A web app for ACME's HR manager to maintain salary records for 10,000 employees across 8 countries, and to answer "how do we pay people?" without spreadsheets.
 
-> Status: backend API complete. The React frontend is in progress.
+| Employees | Pay overview |
+|---|---|
+| ![Employee list filtered to India, sorted by salary](docs/screenshots/employees.png) | ![Pay per country in local currency](docs/screenshots/pay-overview.png) |
+| **Country insights** | **Add employee** |
+| ![Pay by job title in India](docs/screenshots/country-insights.png) | ![Form with currency-aware salary field](docs/screenshots/employee-form.png) |
 
 ## What it does
 
-- **Employee directory.** A paginated list with search by name or email, filters for country, department and job title, and sorting by name or salary.
-- **Salary records.** Create, update and delete employees, with validation errors returned per field.
-- **Pay insights.**
-  - Per country: headcount and min, max, average and median salary, in local currency.
-  - Breakdown by job title within a country.
-  - Org overview: headcount by country and by department.
-- **Seed data.** 10,000 realistic employees across 8 countries, the same on every run.
+- **Employee directory.** Server-side pagination over 10k rows, plus:
+  - Debounced search by name or email.
+  - Filters for country, department and job title.
+  - Sorting by name or salary.
+  - Page size 25, 50 or 100.
 
-The scope, decisions and deliberate omissions are in [docs/requirements.md](docs/requirements.md).
+  Every view lives in the URL, so links, refreshes and the back button restore it.
+- **Salary records.** Add, edit and delete employees.
+  - Validation runs in the form and in the API. API errors appear next to the field they belong to.
+  - Job title and department suggest existing values, which keeps the groupings in insights clean.
+- **Pay insights.**
+  - Per country: headcount and median, average, lowest and highest salary, in local currency, plus the highest paid role.
+  - A sortable breakdown by job title, where each role links to the matching employees.
+  - An org overview with headcount by department.
+- **Demo data.** A deterministic seed of 10,000 employees with realistic names, roles and pay bands per country.
+
+Scope, decisions and deliberate omissions (for example, no cross-currency comparison and no authentication in v1) are in [docs/requirements.md](docs/requirements.md).
 
 ## Tech stack
 
 | Layer | Choice |
 |---|---|
-| Backend | Ruby 3.3, Rails 8.1 (API mode) |
-| Database | PostgreSQL 16 |
-| Tests | RSpec, FactoryBot, shoulda-matchers |
-| Quality | RuboCop, Brakeman, bundler-audit, GitHub Actions CI |
-| Frontend | React + Vite + TypeScript (in progress) |
+| Backend | Ruby 3.3, Rails 8.1 (API mode), PostgreSQL 16 |
+| Frontend | React 19, TypeScript, Vite, Ant Design 6, TanStack Query, React Router 7 |
+| Tests | RSpec, FactoryBot, shoulda-matchers; Vitest, React Testing Library, MSW |
+| Quality | RuboCop, Brakeman, bundler-audit, oxlint, `tsc`, GitHub Actions (tests, lint, security scans, Docker build) |
+| Delivery | One Docker image: Rails serves the API and the built React app |
 
-## Running locally
+## Run it locally
 
-Requirements: Ruby 3.3.5 and PostgreSQL 16 running locally.
+Requirements: Ruby 3.3.5, Node 22 and PostgreSQL 16.
 
 ```bash
+# API on http://localhost:3000
 cd backend
 bundle install
-bin/rails db:prepare     # creates the databases and loads the schema
-bin/rails db:seed        # 10,000 employees; use db:seed:replant to start fresh
-bin/rails server         # http://localhost:3000
+bin/rails db:prepare      # creates the databases, loads the schema and seeds 10k employees
+bin/rails server
+
+# UI on http://localhost:5173 (proxies /api to Rails)
+cd frontend
+npm ci
+npm run dev
 ```
 
-## Running tests
+`bin/rails db:seed:replant` resets the demo data.
+
+## Tests and checks
 
 ```bash
-cd backend
-bundle exec rspec        # about 0.5s
-bin/rubocop
-bin/brakeman --no-pager
+cd backend && bundle exec rspec && bin/rubocop && bin/brakeman --no-pager
+cd frontend && npm test && npm run typecheck && npm run lint
 ```
+
+- **Backend:** 79 specs run in under a second.
+- **Frontend:** 37 tests run in about 11 seconds. They render real pages against a mocked HTTP layer (MSW), so they exercise routing, data fetching and forms together.
+- **CI:** runs everything above on every push and builds the production Docker image.
+
+## Production
+
+One image serves both the API and the UI:
+
+```bash
+docker build -t salary-management .
+docker run -p 3000:3000 \
+  -e DATABASE_URL=postgres://user:pass@host/db \
+  -e SECRET_KEY_BASE=$(openssl rand -hex 64) \
+  -e SEED_DEMO_DATA=true \
+  salary-management
+```
+
+- On boot, the container prepares the database. `SEED_DEMO_DATA=true` loads the 10k demo employees, but only into an empty table.
+- `index.html` is never cached. Hashed JS and CSS are pre-gzipped and cached for a year.
 
 ## API
 
-All endpoints return JSON.
-
 | Method | Path | Notes |
 |---|---|---|
-| GET | `/api/employees` | Params: `q`, `country_code`, `department`, `job_title`, `sort` (`full_name` or `salary`), `direction` (`asc` or `desc`), `page`, `per_page` (max 100) |
-| GET | `/api/employees/:id` | Returns 404 if the employee is missing |
-| POST | `/api/employees` | Body `{ "employee": { ... } }`. Returns 201, or 422 with `{ "errors": { field: [messages] } }` |
-| PATCH | `/api/employees/:id` | Accepts partial updates. Returns 200 or 422 |
+| GET | `/api/employees` | `q`, `country_code`, `department`, `job_title`, `sort` (`full_name`, `salary`), `direction` (`asc`, `desc`), `page`, `per_page` (max 100) |
+| GET | `/api/employees/:id` | Returns 404 as JSON if missing |
+| POST | `/api/employees` | Body `{ "employee": { ... } }`. Returns 201, or 422 with `{ "errors": { "field": ["message"] } }` |
+| PATCH | `/api/employees/:id` | Accepts partial updates |
 | DELETE | `/api/employees/:id` | Returns 204 |
-| GET | `/api/filter_options` | Countries, plus the departments and job titles in use |
+| GET | `/api/filter_options` | Supported countries, plus the departments and job titles in use |
 | GET | `/api/insights/overview` | Headcount, pay per country, headcount per department |
 | GET | `/api/insights/countries/:code` | Summary and job title breakdown for one country |
-
-Example:
-
-```bash
-curl "localhost:3000/api/employees?country_code=IN&department=Engineering&sort=salary&direction=desc&per_page=5"
-curl "localhost:3000/api/insights/countries/IN"
-```
 
 ## Project structure
 
 ```
 backend/
-  app/models/          Employee (validations, normalisation), Country (supported countries)
-  app/queries/         EmployeeQuery: search, filters and sorting for the list
-  app/services/        PayInsights (SQL aggregates), OrgOverview, Pagination
-  app/serializers/     The JSON shape of an employee
-  app/controllers/api/ Thin controllers
-  lib/seeds/           Deterministic 10k employee seeder
-docs/                  Requirements and performance notes
+  app/models/            Employee (validations, normalisation), Country (supported countries)
+  app/queries/           EmployeeQuery: search, filters and whitelisted sorting
+  app/services/          PayInsights (one SQL query per breakdown), OrgOverview, Pagination
+  app/serializers/       Public JSON shape of an employee
+  app/controllers/       Thin API controllers, plus FrontendController for the React app
+  lib/seeds/             Deterministic 10k employee seeder and name lists
+frontend/src/
+  features/employees/    List, URL-driven filters, table, form modal, mutations
+  features/insights/     Overview and country pages
+  api/  lib/  layout/    Fetch client, formatting helpers, shared layout
+docs/                    Requirements, architecture, performance, AI usage
 ```
 
 ## How it was built
 
-Each behaviour went through test-driven development: a failing test is committed first (`test:`), then the code that makes it pass (`feat:`), then a refactor when one was needed (`refactor:`). The commit history shows that loop. Performance decisions are backed by measurements in [docs/performance.md](docs/performance.md).
+Each behaviour was built test-first. The commit history shows the loop: a failing test (`test:`), the code that passes it (`feat:`), and a refactor when one was worth making. Every API change was also exercised with `curl` against a running server, and every UI change in a real browser with screenshots, on both the development and production builds.
+
+More detail:
+
+- [Architecture and trade-offs](docs/architecture.md)
+- [Performance measurements](docs/performance.md)
+- [How AI tools were used](docs/ai-usage.md)
