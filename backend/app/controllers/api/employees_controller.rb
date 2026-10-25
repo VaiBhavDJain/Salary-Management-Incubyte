@@ -8,5 +8,9 @@ module Api
         meta: pagination.meta
       }
     end
+
+    def show
+      render json: EmployeeSerializer.new(Employee.find(params[:id]))
+    end
   end
 end
