@@ -87,4 +87,31 @@ RSpec.describe "Employees API", type: :request do
       expect(response.parsed_body).to eq("error" => "employee is required")
     end
   end
+
+  describe "PATCH /api/employees/:id" do
+    it "updates the employee" do
+      employee = create(:employee, salary: 1_800_000)
+
+      patch "/api/employees/#{employee.id}", params: { employee: { salary: 2_000_000 } }, as: :json
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["salary"]).to eq(2_000_000.0)
+      expect(employee.reload.salary).to eq(2_000_000)
+    end
+
+    it "returns errors by field for invalid input" do
+      employee = create(:employee)
+
+      patch "/api/employees/#{employee.id}", params: { employee: { country_code: "XX" } }, as: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body["errors"]).to eq("country_code" => [ "is not included in the list" ])
+    end
+
+    it "returns not found for an unknown employee" do
+      patch "/api/employees/0", params: { employee: { salary: 1 } }, as: :json
+
+      expect(response).to have_http_status(:not_found)
+    end
+  end
 end
