@@ -1,0 +1,53 @@
+.layout {
+  min-height: 100vh;
+}
+
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-inline: 24px;
+}
+
+.header {
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  padding-inline: 0;
+}
+
+.header .container {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  height: 100%;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 600;
+  color: inherit;
+  white-space: nowrap;
+}
+
+.menu {
+  flex: 1;
+  min-width: 0;
+  border-bottom: none;
+}
+
+.content {
+  padding-block: 24px;
+}
+
+@media (max-width: 600px) {
+  .brandName {
+    display: none;
+  }
+
+  .header .container {
+    gap: 8px;
+  }
+}
