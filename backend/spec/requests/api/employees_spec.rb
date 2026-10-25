@@ -84,6 +84,7 @@ RSpec.describe "Employees API", type: :request do
       post "/api/employees", params: {}, as: :json
 
       expect(response).to have_http_status(:bad_request)
+      expect(response.parsed_body).to eq("error" => "employee is required")
     end
   end
 end
