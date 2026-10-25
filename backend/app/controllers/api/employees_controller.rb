@@ -33,6 +33,12 @@ module Api
       end
     end
 
+    def destroy
+      Employee.find(params[:id]).destroy!
+
+      head :no_content
+    end
+
     private
 
     def employee_params
