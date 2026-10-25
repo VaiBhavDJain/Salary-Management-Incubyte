@@ -29,4 +29,23 @@ RSpec.describe PayInsights do
       )
     end
   end
+
+  describe "#breakdown_by" do
+    it "returns the same figures for each group, highest average first" do
+      create(:employee, job_title: "Data Analyst", salary: 800_000)
+      create(:employee, job_title: "Software Engineer", salary: 1_000_000)
+      create(:employee, job_title: "Software Engineer", salary: 2_000_000)
+
+      expect(described_class.new(Employee.all).breakdown_by(:job_title)).to eq([
+        { job_title: "Software Engineer", headcount: 2, min_salary: 1_000_000.0, max_salary: 2_000_000.0,
+          average_salary: 1_500_000.0, median_salary: 1_500_000.0 },
+        { job_title: "Data Analyst", headcount: 1, min_salary: 800_000.0, max_salary: 800_000.0,
+          average_salary: 800_000.0, median_salary: 800_000.0 }
+      ])
+    end
+
+    it "returns no groups when there are no employees" do
+      expect(described_class.new(Employee.all).breakdown_by(:job_title)).to eq([])
+    end
+  end
 end
