@@ -22,4 +22,17 @@ RSpec.describe "Insights API", type: :request do
       expect(response.parsed_body).to eq("error" => "Country not found")
     end
   end
+
+  describe "GET /api/insights/overview" do
+    it "returns org headcount, pay per country and headcount per department" do
+      create(:employee, country_code: "IN", department: "Engineering", salary: 1_000_000)
+
+      get "/api/insights/overview"
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body["headcount"]).to eq(1)
+      expect(response.parsed_body["countries"]).to contain_exactly(include("code" => "IN", "currency" => "INR", "median_salary" => 1_000_000.0))
+      expect(response.parsed_body["departments"]).to eq([ { "department" => "Engineering", "headcount" => 1 } ])
+    end
+  end
 end
