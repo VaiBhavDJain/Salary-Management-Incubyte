@@ -2,6 +2,18 @@
 
 A web app for ACME's HR manager to maintain salary records for 10,000 employees across 8 countries, and to answer "how do we pay people?" without spreadsheets.
 
+## Demo video
+
+[![Watch the 3-minute demo](docs/screenshots/demo-poster.png)](docs/demo.mp4)
+
+[Watch the demo (MP4, 3 min)](docs/demo.mp4). It walks through:
+
+1. Searching, filtering and sorting 10,000 employees.
+2. Adding, editing and deleting an employee, with form and API validation.
+3. Exploring pay insights per country and per job title.
+
+## Screenshots
+
 | Employees | Pay overview |
 |---|---|
 | ![Employee list filtered to India, sorted by salary](docs/screenshots/employees.png) | ![Pay per country in local currency](docs/screenshots/pay-overview.png) |
@@ -128,7 +140,7 @@ frontend/src/
   features/employees/    List, URL-driven filters, table, form modal, mutations
   features/insights/     Overview and country pages
   api/  lib/  layout/    Fetch client, formatting helpers, shared layout
-docs/                    Requirements, architecture, performance
+docs/                    Requirements, architecture, performance, demo video
 ```
 
 ## How it was built
