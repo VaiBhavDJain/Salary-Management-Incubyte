@@ -83,6 +83,23 @@ docker run -p 3000:3000 \
 
 - On boot, the container prepares the database. `SEED_DEMO_DATA=true` loads the 10k demo employees, but only into an empty table.
 - `index.html` is never cached. Hashed JS and CSS are pre-gzipped and cached for a year.
+- CI builds this image, runs it against PostgreSQL, and smoke-tests it:
+  - the health check;
+  - a deep link returning the app;
+  - 10,000 seeded employees in the API;
+  - gzipped assets.
+
+### Deploy on Render
+
+`render.yaml` describes a web service built from the Dockerfile and a PostgreSQL database. To deploy:
+
+1. In Render, choose **New → Blueprint** and select this repository.
+2. Render generates `SECRET_KEY_BASE`, wires up `DATABASE_URL`, and seeds the demo data on first boot.
+
+Free-tier limits to know about:
+
+- The service sleeps when idle, so the first request after a pause takes up to a minute.
+- Render's free PostgreSQL expires after 30 days. For a longer-lived demo, point `DATABASE_URL` at another provider, such as Neon.
 
 ## API
 

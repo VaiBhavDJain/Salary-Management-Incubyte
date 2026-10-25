@@ -74,7 +74,43 @@ jobs:
 
   docker:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v4
+
       - name: Build production image
         run: docker build -t salary-management .
+
+      - name: Run the image against Postgres
+        run: |
+          docker run -d --name app --network host \
+            -e DATABASE_URL=postgres://postgres:postgres@localhost:5432/salary_management \
+            -e SECRET_KEY_BASE=ci-only-not-secret \
+            -e SEED_DEMO_DATA=true \
+            salary-management
+
+      - name: Smoke test the running app
+        run: |
+          for attempt in $(seq 1 60); do curl -fs localhost:3000/up > /dev/null && break; sleep 2; done
+          curl -fs -H "Accept: text/html" localhost:3000/insights/IN | grep -q '<div id="root">'
+          test "$(curl -fs 'localhost:3000/api/employees?per_page=1' | jq '.meta.total_count')" = "10000"
+          asset=$(curl -fs -H "Accept: text/html" localhost:3000/ | grep -oE '/assets/index-[^"]+\.js' | head -1)
+          curl -fsI -H "Accept-Encoding: gzip" "localhost:3000$asset" | grep -qi '^content-encoding: gzip'
+
+      - name: Show app logs
+        if: failure()
+        run: docker logs app
