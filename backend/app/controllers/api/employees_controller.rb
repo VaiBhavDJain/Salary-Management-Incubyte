@@ -23,6 +23,16 @@ module Api
       end
     end
 
+    def update
+      employee = Employee.find(params[:id])
+
+      if employee.update(employee_params)
+        render json: EmployeeSerializer.new(employee)
+      else
+        render json: { errors: employee.errors.to_hash }, status: :unprocessable_content
+      end
+    end
+
     private
 
     def employee_params
