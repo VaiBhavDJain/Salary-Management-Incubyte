@@ -39,4 +39,22 @@ RSpec.describe "Employees API", type: :request do
       expect(response.parsed_body["meta"]).to eq("page" => 2, "per_page" => 2, "total_count" => 3, "total_pages" => 2)
     end
   end
+
+  describe "GET /api/employees/:id" do
+    it "returns the employee" do
+      employee = create(:employee, full_name: "Asha Rao")
+
+      get "/api/employees/#{employee.id}"
+
+      expect(response).to have_http_status(:ok)
+      expect(response.parsed_body).to include("id" => employee.id, "full_name" => "Asha Rao")
+    end
+
+    it "returns not found for an unknown employee" do
+      get "/api/employees/0"
+
+      expect(response).to have_http_status(:not_found)
+      expect(response.parsed_body).to eq("error" => "Employee not found")
+    end
+  end
 end
