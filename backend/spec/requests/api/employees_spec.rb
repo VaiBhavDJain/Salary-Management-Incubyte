@@ -1,6 +1,11 @@
 require "rails_helper"
 
 RSpec.describe "Employees API", type: :request do
+  let(:employee_attributes) do
+    { full_name: "Asha Rao", email: "asha@acme.com", job_title: "Software Engineer",
+      department: "Engineering", country_code: "IN", salary: 1_800_000 }
+  end
+
   describe "GET /api/employees" do
     it "lists employees ordered by name" do
       create(:employee, full_name: "Zara Khan")
@@ -55,6 +60,30 @@ RSpec.describe "Employees API", type: :request do
 
       expect(response).to have_http_status(:not_found)
       expect(response.parsed_body).to eq("error" => "Employee not found")
+    end
+  end
+
+  describe "POST /api/employees" do
+    it "creates an employee" do
+      expect {
+        post "/api/employees", params: { employee: employee_attributes }, as: :json
+      }.to change(Employee, :count).by(1)
+
+      expect(response).to have_http_status(:created)
+      expect(response.parsed_body).to include("full_name" => "Asha Rao", "currency" => "INR", "salary" => 1_800_000.0)
+    end
+
+    it "returns errors by field for invalid input" do
+      post "/api/employees", params: { employee: employee_attributes.merge(email: "", salary: -1) }, as: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body["errors"]).to eq("email" => [ "can't be blank" ], "salary" => [ "must be greater than 0" ])
+    end
+
+    it "returns bad request when the employee payload is missing" do
+      post "/api/employees", params: {}, as: :json
+
+      expect(response).to have_http_status(:bad_request)
     end
   end
 end
