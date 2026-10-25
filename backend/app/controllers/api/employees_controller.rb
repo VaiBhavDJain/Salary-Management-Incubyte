@@ -1,5 +1,7 @@
 module Api
   class EmployeesController < ApplicationController
+    before_action :set_employee, only: %i[show update destroy]
+
     def index
       pagination = Pagination.new(Employee.order(:full_name, :id), page: params[:page], per_page: params[:per_page])
 
@@ -10,39 +12,45 @@ module Api
     end
 
     def show
-      render json: EmployeeSerializer.new(Employee.find(params[:id]))
+      render json: EmployeeSerializer.new(@employee)
     end
 
     def create
-      employee = Employee.new(employee_params)
+      @employee = Employee.new(employee_params)
 
-      if employee.save
-        render json: EmployeeSerializer.new(employee), status: :created
+      if @employee.save
+        render json: EmployeeSerializer.new(@employee), status: :created
       else
-        render json: { errors: employee.errors.to_hash }, status: :unprocessable_content
+        render_validation_errors
       end
     end
 
     def update
-      employee = Employee.find(params[:id])
-
-      if employee.update(employee_params)
-        render json: EmployeeSerializer.new(employee)
+      if @employee.update(employee_params)
+        render json: EmployeeSerializer.new(@employee)
       else
-        render json: { errors: employee.errors.to_hash }, status: :unprocessable_content
+        render_validation_errors
       end
     end
 
     def destroy
-      Employee.find(params[:id]).destroy!
+      @employee.destroy!
 
       head :no_content
     end
 
     private
 
+    def set_employee
+      @employee = Employee.find(params[:id])
+    end
+
     def employee_params
       params.expect(employee: %i[full_name email job_title department country_code salary])
+    end
+
+    def render_validation_errors
+      render json: { errors: @employee.errors.to_hash }, status: :unprocessable_content
     end
   end
 end

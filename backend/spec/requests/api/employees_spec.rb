@@ -18,8 +18,7 @@ RSpec.describe "Employees API", type: :request do
     end
 
     it "returns each employee with a numeric salary and the local currency" do
-      employee = create(:employee, full_name: "Asha Rao", email: "asha@acme.com", job_title: "Software Engineer",
-                                   department: "Engineering", country_code: "IN", salary: 1_800_000)
+      employee = create(:employee, employee_attributes)
 
       get "/api/employees"
 
