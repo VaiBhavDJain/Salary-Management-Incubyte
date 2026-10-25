@@ -34,4 +34,32 @@ RSpec.describe EmployeeQuery do
       expect(names(q: "  ")).to eq([ "Asha Rao", "Ravi Kumar" ])
     end
   end
+
+  describe "filters" do
+    before do
+      create(:employee, full_name: "Asha Rao", country_code: "IN", department: "Engineering", job_title: "Software Engineer")
+      create(:employee, full_name: "Dev Patel", country_code: "IN", department: "Sales", job_title: "Account Executive")
+      create(:employee, full_name: "Emma Brown", country_code: "GB", department: "Engineering", job_title: "Software Engineer")
+    end
+
+    it "filters by country" do
+      expect(names(country_code: "IN")).to eq([ "Asha Rao", "Dev Patel" ])
+    end
+
+    it "filters by department" do
+      expect(names(department: "Engineering")).to eq([ "Asha Rao", "Emma Brown" ])
+    end
+
+    it "filters by job title" do
+      expect(names(job_title: "Account Executive")).to eq([ "Dev Patel" ])
+    end
+
+    it "combines filters with search" do
+      expect(names(country_code: "IN", department: "Engineering", q: "asha")).to eq([ "Asha Rao" ])
+    end
+
+    it "ignores blank filter values" do
+      expect(names(country_code: "", department: nil)).to eq([ "Asha Rao", "Dev Patel", "Emma Brown" ])
+    end
+  end
 end

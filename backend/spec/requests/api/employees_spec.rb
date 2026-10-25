@@ -43,6 +43,15 @@ RSpec.describe "Employees API", type: :request do
       expect(response.parsed_body["data"].pluck("full_name")).to eq([ "Ravi Kumar" ])
     end
 
+    it "filters by country, department and job title" do
+      create(:employee, full_name: "Asha Rao", country_code: "IN", department: "Engineering", job_title: "Software Engineer")
+      create(:employee, full_name: "Emma Brown", country_code: "GB", department: "Engineering", job_title: "Software Engineer")
+
+      get "/api/employees", params: { country_code: "GB", department: "Engineering", job_title: "Software Engineer" }
+
+      expect(response.parsed_body["data"].pluck("full_name")).to eq([ "Emma Brown" ])
+    end
+
     it "paginates the list" do
       %w[Asha Bina Chen].each { |name| create(:employee, full_name: name) }
 
