@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
-import { afterEach, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, vi } from 'vitest'
+import { server } from './server'
 
 class ResizeObserverStub {
   observe() {}
@@ -9,5 +10,22 @@ class ResizeObserverStub {
 }
 
 vi.stubGlobal('ResizeObserver', ResizeObserverStub)
+vi.stubGlobal('matchMedia', (query: string) => ({
+  matches: false,
+  media: query,
+  onchange: null,
+  addEventListener: () => {},
+  removeEventListener: () => {},
+  addListener: () => {},
+  removeListener: () => {},
+  dispatchEvent: () => false,
+}))
 
-afterEach(() => cleanup())
+beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
+
+afterEach(() => {
+  cleanup()
+  server.resetHandlers()
+})
+
+afterAll(() => server.close())
