@@ -2,6 +2,10 @@
 
 A web app for ACME's HR manager to maintain salary records for 10,000 employees across 8 countries, and to answer "how do we pay people?" without spreadsheets.
 
+**Live demo:** https://salary-management-kwlr.onrender.com
+
+It runs on Render's free tier, which sleeps when idle, so the first request after a pause can take up to a minute.
+
 ## Demo video
 
 [![Watch the 3-minute demo](docs/screenshots/demo-poster.png)](docs/demo.mp4)
